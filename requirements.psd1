@@ -9,4 +9,6 @@
     Pester           = 'latest'
     PSScriptAnalyzer = 'latest'
     platyPS          = 'latest'
+    CloudConnect     = 'latest'
+    PSFramework      = 'latest'
 }

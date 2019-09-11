@@ -3,7 +3,7 @@ Migrate Exchange On-premise distribution groups to Exchange Online (Office 365).
 
 | Azure Pipelines (master) | PS Gallery | License
 |---|---|---|
-[![Build Status](LINK](LINK TO MASTER) | [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/DistributionGroupMigration.svg)](https://www.powershellgallery.com/packages/DistributionGroupMigration/) | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Build Status](https://dev.azure.com/omnicit/DistributionGroupMigration/_apis/build/status/PhilipHaglund.DistributionGroupMigration?branchName=master)](https://dev.azure.com/omnicit/DistributionGroupMigration/_apis/build/status/PhilipHaglund.DistributionGroupMigration?branchName=master) | [![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/DistributionGroupMigration.svg)](https://www.powershellgallery.com/packages/DistributionGroupMigration/) | [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 The module DistributionGroupMigration helps with migration of synchronized (AAD Connect) Exchange On-premise distribution groups to Exchange Online (Office 365).
 

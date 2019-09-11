@@ -1,0 +1,11 @@
+{
+    "files.trimTrailingWhitespace": true,
+    "files.encoding": "utf8bom",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "powershell.codeFormatting.preset": "Stroustrup",
+    "powershell.codeFormatting.useCorrectCasing": true,
+    "powershell.codeFormatting.ignoreOneLineBlock": true,
+    "powershell.codeFormatting.openBraceOnSameLine": true,
+    "powershell.scriptAnalysis.settingsPath": "ScriptAnalyzerSettings.psd1"
+}

@@ -1,0 +1,6 @@
+# Don't checkin the Release output dir.
+*.zip
+Release/
+examples/Out/*
+test/Out/*
+TestResults.xml

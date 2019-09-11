@@ -1,5 +1,6 @@
 # DistributionGroupMigration
 Migrate Exchange On-premise distribution groups to Exchange Online (Office 365).
+![DistributionGroupMigration](https://raw.githubusercontent.com/PhilipHaglund/DistributionGroupMigration/master/DistributionGroupMigration.png "DistributionGroupMigration")
 
 | Azure Pipelines (master) | PS Gallery | License
 |---|---|---|

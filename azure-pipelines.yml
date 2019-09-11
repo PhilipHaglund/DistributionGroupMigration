@@ -1,17 +1,14 @@
-resources:
-  repositories:
-    - repository: templates
-      type: github
-      name: Omnicit/AzurePipelineTemplates
-      endpoint: Github
-
-variables:
-- group: deployment-vars
-
-trigger:
-  branches:
-    include:
-    - refs/heads/*
-
-stages:
-- template: BuildTestDeployModule.yml@templates
+jobs:
+  - job: Test_windows2016
+    pool: 
+      vmImage: vs2017-win2016
+    steps: 
+      - powershell: |
+          ./build.ps1 -Task Test -Bootstrap -Verbose
+        displayName: "Running Tests Windows 2016"
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testRunner: NUnit
+          testResultsFiles: '**Release/TestsResults.xml'
+          testRunTitle: 'PS_Win2016'

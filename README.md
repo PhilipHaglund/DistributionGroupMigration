@@ -69,6 +69,11 @@ Complete-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com'
 # Optional, remove the group after completion. Force must be used when Complete-OnPremDSTGroupToCloud was ran before Remove-OnPremDSTGroup.
 Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
 ```
+Initialize all synchronized distribution groups:
+```PowerShell
+$DSTs = Get-DistributionGroup -Filter {IsDirSynced -eq $true}
+$DSTs.PrimarySmtpAddress | Initialize-OnPremDSTGroupToCloud -ExchangeServer exchprod01.contoso.com -Force
+```
 ### Rollback
 If for some reason a rollback is needed all distribution group objects is saved in [PSFClixml](http://psframework.org/documentation/commands/PSFramework/Import-PSFClixml.html).
 

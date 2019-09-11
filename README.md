@@ -58,6 +58,16 @@ Get-Help -Name Set-NoAADSyncOnPremDSTGroup -Examples
 5. Run ```Complete-OnPremDSTGroupToCloud``` to complete the migration.
 6. Verify that the distribution group has the correct properties and working, i.e. send a mail message to the distribution group.
 
+If you put it all together:
+```PowerShell
+Initialize-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+# Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+Invoke-Command -ComputerName "<AADConnectServerName>" -ScriptBlock {Start-ADSyncSyncCycle}
+Complete-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com'
+# Optional, remove the group after completion. Force must be used when Complete-OnPremDSTGroupToCloud was ran before Remove-OnPremDSTGroup.
+Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
+```
 ### Rollback
 If for some reason a rollback is needed all distribution group objects is saved in [PSFClixml](http://psframework.org/documentation/commands/PSFramework/Import-PSFClixml.html).
 
@@ -74,7 +84,8 @@ Remove-DistributionGroup -Identity $DistributionGroupObject.CompletedGroup.Prima
 
     - Recreate the distribution group:
     ```PowerShell
-    $DistributionGroupObject.EXCH | New-EXCHDistributionGroup
+    $Recreate = $DistributionGroupObject.EXCH
+    New-EXCHDistributionGroup @Recreate
     ```
     - Remove NoSync attribute:
     ```PowerShell

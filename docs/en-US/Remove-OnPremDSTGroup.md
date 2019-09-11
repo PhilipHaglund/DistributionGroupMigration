@@ -36,7 +36,7 @@ Remove the source distribution group from Exchange On-premise, which will also r
 Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
 ```
 
-\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "PreMig-dstgroup001@contoso.com" from Exchange On-premise.
+\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "dstgroup001@contoso.com" from Exchange On-premise.
 
 This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup001@contoso.com'.
 
@@ -45,7 +45,7 @@ This example removes the source distribution group from Exchange On-premise, exc
 Remove-OnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com -NoMFA
 ```
 
-\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "PreMig-dstgroup002@contoso.com" from Exchange On-premise.
+\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "dstgroup002@contoso.com" from Exchange On-premise.
 
 This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup002@contoso.com'.
 When NoMFA switch is issued the connection to Exchange Online PowerShell will be using the native experience instead of modern authentication.
@@ -55,7 +55,7 @@ When NoMFA switch is issued the connection to Exchange Online PowerShell will be
 Remove-OnPremDSTGroup -Group 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
 ```
 
-\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "PreMig-dstgroup003@contoso.com" from Exchange On-premise.
+\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "dstgroup003@contoso.com" from Exchange On-premise.
 
 This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup003@contoso.com'.
 The LogPath parameter specifies an alternate path for all logs and the distribution group XML-objects.
@@ -66,7 +66,7 @@ Remove-OnPremDSTGroup -Group 'dstgroup004@contoso.com' -ExchangeServer exchprod0
 ```
 
 WARNING: \[11:12:03\]\[Remove-OnPremDSTGroup\] Excluding validation of existence for the initialized distribution group.
-\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "PreMig-dstgroup004@contoso.com" from Exchange On-premise.
+\[11:12:06\]\[Remove-OnPremDSTGroup\] Successfully removed the source distribution group with identity "dstgroup004@contoso.com" from Exchange On-premise.
 
 This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup004@contoso.com'.
 The Force parameter will not connect to Exchange Online and validate the existence for the initialized distribution group.

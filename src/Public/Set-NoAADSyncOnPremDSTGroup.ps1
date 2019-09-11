@@ -179,8 +179,9 @@
                         continue
                     }
 
-                    $ADGroup = Get-ADGroup -Identity $Group.EXCH.DistinguishedName -ErrorAction Stop
+                    $ADGroup = Get-ADGroup -Identity $DistributionGroupObject.EXCH.DistinguishedName -ErrorAction Stop
                     Set-ADGroup -Identity $ADGroup.DistinguishedName -Replace @{'adminDescription' = $AdminDescription } -ErrorAction Stop
+                    Write-PSFMessage -Level Host -Message ('Successfully set the adminDescription property to "{0}" for the source distribution group "dstgroup001@contoso.com". {0}.' -f $AdminDescription, $DistributionGroupObject.EXCH.PrimarySmtpAddress)
                 }
                 catch {
                     $PSCmdlet.ThrowTerminatingError($_)

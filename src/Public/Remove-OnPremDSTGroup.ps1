@@ -158,7 +158,7 @@
                     }
 
                     if ($PSBoundParameters.ContainsKey('Force') -or $PSCmdlet.ShouldContinue($ExchGroup.PrimarySmtpAddress, $MyInvocation.MyCommand.Name)) {
-                        Remove-ExchDistributionGroup -Identity $ExchGroup.PrimarySmtpAddress -ErrorAction Stop
+                        Remove-ExchDistributionGroup -Identity $ExchGroup.PrimarySmtpAddress -ErrorAction Stop -Confirm:$false
                         Write-PSFMessage -Level Host -Message ('Successfully removed the source distribution group with identity "{0}" from Exchange On-premise.' -f $DistributionGroupObject.EXCH.PrimarySmtpAddress)
                     }
                 }

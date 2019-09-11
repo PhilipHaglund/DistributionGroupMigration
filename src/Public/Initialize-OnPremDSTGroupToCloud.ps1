@@ -157,9 +157,15 @@
                 $ErrorActionPreference = $PreviousErrorActionPreference
             }
         }
+        try {
+            $AcceptedDomain = Get-AcceptedDomain -ErrorAction Stop
+        }
+        catch {
+            $PSCmdlet.ThrowTerminatingError($_)
+        }
         [array]$ValidRecipientTypeDetails = @('UserMailbox', 'LegacyMailbox' , 'SharedMailbox' , 'TeamMailbox' , 'MailUser' , 'LinkedMailbox' , 'RemoteUserMailbox' , 'RemoteSharedMailbox', 'RemoteTeamMailbox', 'MailContact', 'User', 'UniversalSecurityGroup', 'MailUniversalSecurityGroup')
         [regex]$ExcludeNew = 'ManagedBy|OrganizationalUnit'
-        [regex]$ExcludeSet = 'ManagedBy|OrganizationalUnit|Alias|DisplayName|Name|PrimarySmtpAddress|Identity|WindowsEmailAddress|UMDtmfMap'
+        [regex]$ExcludeSet = 'ManagedBy|OrganizationalUnit|Alias|DisplayName|Name|PrimarySmtpAddress|Identity|WindowsEmailAddress|UMDtmfMap|HiddenFromAddressListsEnabled'
         [regex]$AddPrefix = 'Alias|DisplayName|Name|PrimarySmtpAddress'
     }
     process {
@@ -260,8 +266,13 @@
                             continue
                         }
                         elseif ($Parameter.Key -match $AddPrefix -and ($DistributionGroupObject.EXCH."$($Parameter.Key)")) {
-                            Write-PSFMessage -Level Verbose -Message ('Adding prefix "{0}" for property {0}.' -f $Prefix, $Parameter.Key)
-                            $InitializeNewGroup.Add("$($Parameter.Key)", ('{0}{1}' -f $Prefix, $DistributionGroupObject.EXCH."$($Parameter.Key)"))
+                            Write-PSFMessage -Level Verbose -Message ('Adding prefix "{0}" for property {1}.' -f $Prefix, $Parameter.Key)
+                            if ($Parameter.Key -eq 'PrimarySmtpAddress') {
+                                $InitializeNewGroup.Add("$($Parameter.Key)", ('{0}{1}' -f $Prefix, $DistributionGroupObject.EXO."$($Parameter.Key)"))
+                            }
+                            else {
+                                $InitializeNewGroup.Add("$($Parameter.Key)", ('{0}{1}' -f $Prefix, $DistributionGroupObject.EXCH."$($Parameter.Key)"))
+                            }
                         }
                         elseif ($DistributionGroupObject.EXCH."$($Parameter.Key)") {
                             $InitializeNewGroup.Add("$($Parameter.Key)", $DistributionGroupObject.EXCH."$($Parameter.Key)")
@@ -280,9 +291,10 @@
                             continue
                         }
                         elseif ($Parameter.Key -match 'EmailAddresses' -and ($DistributionGroupObject.EXCH."$($Parameter.Key)")) {
-                            Write-PSFMessage -Level Verbose -Message ('Adding prefix "{0}" for property {0}.' -f $Prefix, $Parameter.Key)
+                            Write-PSFMessage -Level Verbose -Message ('Adding prefix "{0}" for property {1}.' -f $Prefix, $Parameter.Key)
                             $EmailAddresses = foreach ($Address in $DistributionGroupObject.EXO.EmailAddresses) {
-                                if ($Address -match '^smtp\:') {
+                                $VerifyEmailDomain = $Address -replace '.+:.+\@'
+                                if ($Address -match '^smtp\:' -and $AcceptedDomain.DomainName -contains $VerifyEmailDomain) {
                                     $Address -replace '^(smtp\:)(.+)', ('$1{0}$2' -f $Prefix)
                                 }
                             }
@@ -294,13 +306,15 @@
                     }
 
                     if ($DistributionGroupObject.Manager) {
-                        $InitializeSetGroup.Add('ManagedBy', $DistributionGroupObject.Manager)
+                        $InitializeSetGroup.Add('ManagedBy', $DistributionGroupObject.Manager.PrimarySmtpAddress)
                     }
 
                     Write-PSFMessage -Level Verbose -Message ('Updating properties for distribution group {0}.' -f $InitializedNewGroup.PrimarySmtpAddress)
                     Set-DistributionGroup -Identity $InitializedNewGroup.PrimarySmtpAddress @InitializeSetGroup -HiddenFromAddressListsEnabled:$true -BypassSecurityGroupManagerCheck -ErrorAction Stop
                     Write-PSFMessage -Level Verbose -Message ('Updating membership for distribution group {0}.' -f $InitializedNewGroup.PrimarySmtpAddress)
-                    Update-DistributionGroupMember -Identity $InitializedNewGroup.PrimarySmtpAddress -Members @($DistributionGroupObject.Members.PrimarySmtpAddress) -BypassSecurityGroupManagerCheck -Confirm:$false -ErrorAction Stop
+                    if ($DistributionGroupObject.Members.Count -gt 0) {
+                        Update-DistributionGroupMember -Identity $InitializedNewGroup.PrimarySmtpAddress -Members @($DistributionGroupObject.Members.PrimarySmtpAddress) -BypassSecurityGroupManagerCheck -Confirm:$false -ErrorAction Stop
+                    }
                     $InitializedGroup = Get-DistributionGroup -Identity $InitializedNewGroup.PrimarySmtpAddress -ErrorAction Stop
 
                     $DistributionGroupObject.InitializedGroup = $InitializedGroup

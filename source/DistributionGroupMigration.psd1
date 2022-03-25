@@ -109,6 +109,9 @@
             # ReleaseNotes of this module
             ReleaseNotes = 'https://github.com/PhilipHaglund/DistributionGroupMigration/blob/master/ReleaseNotes.md'
 
+            # Empty prerelease
+            Prerelease = ""
+
         } # End of PSData hashtable
 
     } # End of PrivateData hashtable

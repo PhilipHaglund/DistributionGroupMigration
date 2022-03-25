@@ -20,8 +20,8 @@
         }
         catch {
             try {
-                Write-PSFMessage -Level Warning -Message 'Unable to use Kerberos authentication for Exchange On-premise. Provide credentials to try again.'
-                $Session = New-PSSession -Name EXCH -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$($ExchangeServer)/PowerShell/" -Credential (Get-Credential -Message 'Exchange On-premise credentials') -AllowRedirection -ErrorAction Stop -WarningAction SilentlyContinue
+                Write-PSFMessage -Level Warning -Message 'Unable to use current credentials when authenticating to Exchange On-premise. Provide credentials to try again.'
+                $Session = New-PSSession -Name EXCH -ConfigurationName Microsoft.Exchange -ConnectionUri "http://$($ExchangeServer)/PowerShell/" -Credential (Get-Credential -Message 'Exchange On-premise credentials') -Authentication Kerberos -AllowRedirection -ErrorAction Stop -WarningAction SilentlyContinue
                 Import-Module (Import-PSSession -Session $Session -Prefix EXCH -ErrorAction Stop -WarningAction SilentlyContinue) -Prefix EXCH -Global -ErrorAction Stop -WarningAction SilentlyContinue
             }
             catch {

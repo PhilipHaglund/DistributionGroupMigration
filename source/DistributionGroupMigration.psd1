@@ -15,7 +15,7 @@
     ModuleVersion        = '0.1.1'
 
     # Supported PSEditions
-    CompatiblePSEditions = @('Desktop')
+    CompatiblePSEditions = 'Desktop', 'Core'
 
     # ID used to uniquely identify this module
     GUID                 = 'c49cee3a-2c8e-4fc2-a6dd-944d437e042e'
@@ -95,7 +95,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags         = @('Exchange', 'Office365', 'Migrate', 'DistributionGroup', 'PSEdition_Desktop')
+            Tags         = @('Exchange', 'Office365', 'Migrate', 'DistributionGroup', 'PSEdition_Desktop', 'PSEdition_Core')
 
             # A URL to the license for this module.
             LicenseUri   = 'https://github.com/PhilipHaglund/DistributionGroupMigration/blob/master/LICENSE'

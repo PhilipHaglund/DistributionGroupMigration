@@ -95,7 +95,7 @@
         #>
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern("^[a-z0-9]{4,9}\-")]
+        [ValidatePattern('^[a-z0-9]{4,9}\-')]
         [string]$Prefix = 'PreMig-',
 
         # Specifies that managers and members of a distribution group will be removed from the distribution group if they don't are eligible to be a manager or member of a cloud only distribution group.
@@ -153,11 +153,13 @@
                 $ErrorActionPreference = $PreviousErrorActionPreference
             }
         }
-        try {
-            $AcceptedDomain = Get-AcceptedDomain -ErrorAction Stop
-        }
-        catch {
-            $PSCmdlet.ThrowTerminatingError($_)
+        if ($PSCmdlet.ShouldProcess('Get-AcceptedDomain')) {
+            try {
+                $AcceptedDomain = Get-AcceptedDomain -ErrorAction Stop
+            }
+            catch {
+                $PSCmdlet.ThrowTerminatingError($_)
+            }
         }
         [array]$ValidRecipientTypeDetails = @('UserMailbox', 'LegacyMailbox' , 'SharedMailbox' , 'TeamMailbox' , 'MailUser' , 'LinkedMailbox' , 'RemoteUserMailbox' , 'RemoteSharedMailbox', 'RemoteTeamMailbox', 'MailContact', 'User', 'UniversalSecurityGroup', 'MailUniversalSecurityGroup')
         [regex]$ExcludeNew = 'ManagedBy|OrganizationalUnit'

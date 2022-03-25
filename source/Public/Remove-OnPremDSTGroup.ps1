@@ -94,7 +94,7 @@
                 try {
                     $PreviousErrorActionPreference = $ErrorActionPreference
                     $ErrorActionPreference = 'Continue'
-                    if (Connect-ExchangeOnline -NoMFA:$NoMFA -ErrorAction Stop -WarningAction SilentlyContinue) {
+                    if (Connect-O365EXO -ErrorAction Stop -WarningAction SilentlyContinue) {
                         Write-PSFMessage -Level Verbose -Message 'Connected to Exchange Online.'
                     }
                     else {

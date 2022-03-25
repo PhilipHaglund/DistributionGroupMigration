@@ -108,11 +108,7 @@
         "$env:APPDATA\PowerShell\PSFramework\Logs" for PowerShell Core.
         #>
         [Parameter()]
-        [string]$LogPath = (Get-PSFConfigValue -FullName 'PSFramework.Logging.FileSystem.LogPath'),
-
-        # Specifies that No MFA will be used when connecting to Exchange Online.
-        [Parameter()]
-        [switch]$NoMFA
+        [string]$LogPath = (Get-PSFConfigValue -FullName 'PSFramework.Logging.FileSystem.LogPath')
     )
     begin {
         try {
@@ -125,7 +121,7 @@
             try {
                 $PreviousErrorActionPreference = $ErrorActionPreference
                 $ErrorActionPreference = 'Continue'
-                if (Connect-ExchangeOnline -NoMFA:$NoMFA -ErrorAction Stop -WarningAction SilentlyContinue) {
+                if (Connect-O365EXO -ErrorAction Stop -WarningAction SilentlyContinue) {
                     Write-PSFMessage -Level Verbose -Message 'Connected to Exchange Online.'
                 }
                 else {
@@ -252,7 +248,7 @@
                             Write-PSFMessage -Level Warning -Message ('Excluding member {0} for group {1} because recipient does not exist in Exchange Online as a valid recipient.' -f $Member.PrimarySmtpAddress, $GroupId) -WarningAction Continue
                         }
                         else {
-                            Write-PSFMessage -Level Warning -Message ('Member {0} does not exist in Exchange Online as a valid recipient. Will not continue with current group {1}.' -f $ManagerId, $GroupId) -WarningAction Continue
+                            Write-PSFMessage -Level Warning -Message ('Member {0} does not exist in Exchange Online as a valid recipient. Will not continue with current group {1}.' -f $Member.PrimarySmtpAddress, $GroupId) -WarningAction Continue
                             continue Group
                         }
                     }

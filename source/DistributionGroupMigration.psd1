@@ -9,31 +9,31 @@
 @{
 
     # Script module or binary module file associated with this manifest.
-    RootModule        = 'DistributionGroupMigration.psm1'
+    RootModule           = 'DistributionGroupMigration.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '0.1.1'
+    ModuleVersion        = '0.1.1'
 
     # Supported PSEditions
     CompatiblePSEditions = @('Desktop')
 
     # ID used to uniquely identify this module
-    GUID              = 'c49cee3a-2c8e-4fc2-a6dd-944d437e042e'
+    GUID                 = 'c49cee3a-2c8e-4fc2-a6dd-944d437e042e'
 
     # Author of this module
-    Author            = 'Philip Haglund'
+    Author               = 'Philip Haglund'
 
     # Company or vendor of this module
-    CompanyName       = 'Omnicit AB'
+    CompanyName          = 'Omnicit AB'
 
     # Copyright statement for this module
-    Copyright         = '(c) 2019 Philip Haglund. All rights reserved.'
+    Copyright            = '(c) 2019 Philip Haglund. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'Migrate Exchange On-premise distribution groups to Exchange Online (Office 365).'
+    Description          = 'Migrate Exchange On-premise distribution groups to Exchange Online (Office 365).'
 
     # Minimum version of the Windows PowerShell engine required by this module
-    PowerShellVersion = ' 5.1'
+    PowerShellVersion    = ' 5.1'
 
     # Name of the Windows PowerShell host required by this module
     # PowerShellHostName = ''
@@ -51,7 +51,7 @@
     # ProcessorArchitecture = ''
 
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules   = @('CloudConnect', 'PSFramework')
+    RequiredModules      = @('ExchangeOnlineManagement', 'PSFramework')
 
     # Assemblies that must be loaded prior to importing this module
     # RequiredAssemblies = @()
@@ -69,16 +69,16 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @()
+    FunctionsToExport    = @()
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-    CmdletsToExport   = @()
+    CmdletsToExport      = @()
 
     # Variables to export from this module
-    VariablesToExport = @()
+    VariablesToExport    = @()
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @()
+    AliasesToExport      = @()
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -90,18 +90,18 @@
     # FileList = @()
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-    PrivateData       = @{
+    PrivateData          = @{
 
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags = @('Exchange', 'Office365', 'Migrate', 'DistributionGroup', 'PSEdition_Desktop')
+            Tags         = @('Exchange', 'Office365', 'Migrate', 'DistributionGroup', 'PSEdition_Desktop')
 
             # A URL to the license for this module.
-            LicenseUri = 'https://github.com/PhilipHaglund/DistributionGroupMigration/blob/master/LICENSE'
+            LicenseUri   = 'https://github.com/PhilipHaglund/DistributionGroupMigration/blob/master/LICENSE'
 
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/PhilipHaglund/DistributionGroupMigration'
+            ProjectUri   = 'https://github.com/PhilipHaglund/DistributionGroupMigration'
 
             # A URL to an icon representing this module.
             # IconUri = ''

@@ -16,6 +16,8 @@
     Sampler                     = 'latest'
     'Sampler.GitHubTasks'       = 'latest'
     MarkdownLinkCheck           = 'latest'
+    ExchangeOnlineManagement    = 'latest'
+    PSFramework                 = 'latest'
 
 }
 

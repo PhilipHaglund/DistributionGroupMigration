@@ -12,7 +12,7 @@
         # The Prefix parameter specifies an alias to add to nouns in the names of older remote PowerShell cmdlets (cmdlet with nouns that don't already start with EXO). A valid value is a text string without spaces or special characters like underscrores, asterisks etc, and you can't use the value EXO (this prefix is reserved for PowerShell V2 module cmdlets).
         [Parameter()]
         [ValidatePattern('^(?!.*EXO).*$')]
-        [string]$Prefix = ''
+        [string]$Prefix
     )
 
     try {
@@ -37,7 +37,7 @@
     }
     catch {
         try {
-            $null = Connect-ExchangeOnline @PSBoundParameters -ShowBanner:$false -ErrorAction Stop
+            $null = Connect-ExchangeOnline @PSBoundParameters -ShowBanner:$false
             return $true
         }
         catch {

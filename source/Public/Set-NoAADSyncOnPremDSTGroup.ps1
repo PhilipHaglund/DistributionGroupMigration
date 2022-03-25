@@ -90,18 +90,27 @@
 
         # Specifies the suffix for the property adminDescription. Default the suffix is 'NoAADSync'. The string will concatenate the [string]'Group_' with $Suffix.
         [Parameter()]
-        [string]$Suffix = 'NoAADSync',
-
-        # Specifies that No MFA will be used when connecting to Exchange Online. If the Force parameter is specified the NoMFA parameter will have no effect.
-        [Parameter()]
-        [switch]$NoMFA
+        [string]$Suffix = 'NoAADSync'
     )
     begin {
         try {
-            Import-Module -Name ActiveDirectory -Force -ErrorAction Stop -WarningAction Stop
+            $Cmdlet = "Get-Command -Name 'Get-ADDomain' -ErrorAction SilentlyContinue"
+            $TestADConnection = & $Cmdlet
+            if (-not $TestADConnection) {
+                if ($PSEdition -eq 'Core') {
+                    Import-Module -Name ActiveDirectory -Force -UseWindowsPowerShell -WarningAction SilentlyContinue -ErrorAction Stop
+                }
+                else {
+                    Import-Module -Name ActiveDirectory -Force -ErrorAction Stop -WarningAction Stop
+                }
+                $TestADConnection = & $Cmdlet
+                if (-not $TestADConnection) {
+                    throw ('Unable to connect to Active Directory - {0}' -f $Error[0].Exception.Message)
+                }
+            }
         }
         catch {
-            Write-PSFMessage -Level Critical -Message ('The ActiveDirectory module is not installed. {1} will not continue.' -f $env:COMPUTERNAME, 'Set-NoAADSyncOnPremDSTGroup')
+            Write-PSFMessage -Level Critical -Message ('{0}. {1} will not continue.' -f $_.Exception.Message, 'Set-NoAADSyncOnPremDSTGroup')
             $PSCmdlet.ThrowTerminatingError($_)
         }
         try {

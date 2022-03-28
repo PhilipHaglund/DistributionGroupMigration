@@ -5,10 +5,21 @@ SHORT DESCRIPTION
     Migrate (Copy) Exchange On-premise distribution groups to Exchange Online (Office 365).
 
 LONG DESCRIPTION
-    {{ Add Long description here }}
+    Have you seen the following message:
+
+    The action 'Set-DistributionGroup', '<property>', can't be performed on the object '<name>' because the object is being synchronized from your on-premises organization. This action should be performed on the object in your on-premises organization.
+
+    This is because owners of an on-premises distribution group that's synced to Office 365 can't manage the distribution group in Exchange Online.
+    The module DistributionGroupMigration is designed to help with this by migrating (copying) Exchange On-premise distribution groups to Exchange Online (Office 365).
 
 EXAMPLES
-    PS C:\> {{ add examples here }}
+    PS C:\> Initialize-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+    PS C:\> Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+    PS C:\> # Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+    PS C:\> Invoke-Command -ComputerName "<AADConnectServerName>" -ScriptBlock {Start-ADSyncSyncCycle} -Credental (Get-Credental 'AADConnectServerCredentials')
+    PS C:\> Complete-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com'
+    PS C:\> # Optional, remove the group after completion. Force must be used when Complete-OnPremDSTGroupToCloud was ran before Remove-OnPremDSTGroup.
+    PS C:\> Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
 
 NOTE:
     Thank you to all those who contributed to this module, by writing code, sharing opinions, and provided feedback.
@@ -17,8 +28,7 @@ TROUBLESHOOTING NOTE:
     Look out on the Github repository for issues and new releases.
 
 SEE ALSO
-  - {{ Please add Project URI such as github }}}
-
+  - https://github.com/PhilipHaglund/DistributionGroupMigration
 KEYWORDS
-      {{ Add coma separated keywords here }}
+      Exchange, Office365, Migrate, DistributionGroup
 

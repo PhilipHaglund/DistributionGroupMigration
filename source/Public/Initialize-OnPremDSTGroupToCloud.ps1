@@ -45,13 +45,12 @@
     that member or manager will be excluded from the created distribution group in Exchange Online.
 
     .EXAMPLE
-    Initialize-OnPremDSTGroupToCloud -Group 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com -NoMFA
+    Initialize-OnPremDSTGroupToCloud -Group 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Successfully created a cloud only distribution group with identity "PreMig-dstgroup004@contoso.com".
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after initialization, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs\dstgroup004@contoso.com.byte".
 
     This example creates a "Cloud Only" (Exchange Online) copy of the Exchange On-premise distribution group 'dstgroup001@contoso.com' with the prefix 'Mig1234-'.
-    When NoMFA switch is issued the connection to Exchange Online PowerShell will be using the native experience instead of modern authentication.
 
     .EXAMPLE
     Initialize-OnPremDSTGroupToCloud -Group 'dstgroup005@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
@@ -101,6 +100,19 @@
         # Specifies that managers and members of a distribution group will be removed from the distribution group if they don't are eligible to be a manager or member of a cloud only distribution group.
         [Parameter()]
         [switch]$Force,
+
+        <#
+        The Manager parameter specifies an owner for the group. A group must have at least one owner. If you don't use this parameter to specify the owner when you migrate the group, the existing manager for the On-Premise group is used. If the On-Premise Manager is unresolvable in Exchange Online (missing or not synced) the Initialize-OnPremDSTGroupToCloud won't create a copy of the Distribution Group in Exchange Online.
+        The owner you specify for this parameter must be a mailbox, mail user or mail-enabled security group (a mail-enabled security principal that can have permissions assigned). You can use any value that uniquely identifies the owner. For example:
+
+        - User principal name (UPN) or E-Mail Address.
+
+        To enter multiple owners and overwrite all existing entries, use the following syntax: `Owner1,Owner2,...OwnerN`.
+        An owner that you specify with this parameter isn't automatically a member of the group. You need to manually add the owner as a member.
+        #>
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Net.Mail.MailAddress[]]$Manager,
 
         <#
         Specifies the path for all logs and the distribution group XML-objects.
@@ -177,6 +189,7 @@
                     $Members = $null
                     $Member = $null
                     $OnlineMemberId = $null
+                    $ManagedBy = $null
                     [Collections.ArrayList]$ValidManagers = [Collections.ArrayList]::new()
                     [Collections.ArrayList]$ValidMembers = [Collections.ArrayList]::new()
                     $DistributionGroupObject = [PSCustomObject]@{
@@ -210,51 +223,77 @@
                     }
                     $DistributionGroupObject.EXCH = $ExchGroup
 
-                    if ($PSBoundParameters.ContainsKey('Force') -and $ExchGroup.Managedby.Count -eq 0) {
+                    [bool]$NewManager = $false
+                    if ($PSBoundParameters.ContainsKey('Manager') -and $ExchGroup.Managedby.Count -gt 0) {
+                        [bool]$NewManager = $true
+                        Write-PSFMessage -Level Warning -Message ('Will overwrite existing manager "{0}" for group "{1}". Will add "{2}" user as manager.' -f $ExchGroup.Managedby, $GroupId, ($Manager -join ', ')) -WarningAction Continue
+                    }
+                    elseif ($PSBoundParameters.ContainsKey('Manager') -and $ExchGroup.Managedby.Count -eq 0) {
+                        [bool]$NewManager = $true
+                        Write-PSFMessage -Level Verbose -Message ('No existing manager found for group {0}. Will add "{1}" user as manager.' -f $GroupId, ($Manager -join ', '))
+                    }
+                    elseif ($PSBoundParameters.ContainsKey('Force') -and $ExchGroup.Managedby.Count -eq 0) {
                         Write-PSFMessage -Level Warning -Message ('No existing manager found for group {0}. Will add current user as manager.' -f $GroupId) -WarningAction Continue
                     }
                     elseif ($ExchGroup.Managedby.Count -eq 0) {
                         Write-PSFMessage -Level Warning -Message ('No existing manager found. Will not continue with current group {0}.' -f $GroupId) -WarningAction Continue
                         continue Group
                     }
-                    foreach ($Manager in $ExchGroup.Managedby) {
-                        $ManagerId = (Get-EXCHRecipient -Identity $Manager -ErrorAction SilentlyContinue).PrimarySmtpAddress
-                        $OnlineManagerId = Get-Recipient -Identity $ManagerId -ErrorAction SilentlyContinue
-                        if ($OnlineManagerId.RecipientTypeDetails -in $ValidRecipientTypeDetails) {
-                            $null = $ValidManagers.Add($OnlineManagerId)
+                    if ($NewManager) {
+                        foreach ($ManagedBy in $Manager) {
+                            $OnlineManagerId = Get-Recipient -Identity $ManagedBy -ErrorAction SilentlyContinue
+                            if ($OnlineManagerId.RecipientTypeDetails -in $ValidRecipientTypeDetails) {
+                                $null = $ValidManagers.Add($OnlineManagerId.PrimarySmtpAddress)
+                            }
                         }
-                        elseif ($PSBoundParameters.ContainsKey('Force')) {
-                            Write-PSFMessage -Level Warning -Message ('Excluding manager {0} for group {1} because recipient does not exist in Exchange Online as a valid recipient.' -f $ManagerId, $GroupId) -WarningAction Continue
+                        if (($PSBoundParameters.ContainsKey('Force')) -and $ValidManagers.Count -eq 0) {
+                            Write-PSFMessage -Level Warning -Message ('Excluding manager(s) "{0}" for group "{1}" because recipient(s) does not exist in Exchange Online as valid recipient(s).' -f ($Manager -join ', '), $GroupId) -WarningAction Continue
+                        }
+                        elseif ($ValidManagers.Count -eq 0) {
+                            Write-PSFMessage -Level Warning -Message ('Manager(s) "{0}" does not exist in Exchange Online as valid recipient(s). Will not continue with current group "{1}".' -f ($Manager -join ', '), $GroupId) -WarningAction Continue
+                            Write-PSFMessage -Level Verbose -Message ('Use the "Force" parameter to manually add your self as Owner for the current group "{0}".' -f $GroupId)
+                            continue Group
+                        }
+                    }
+                    else {
+                        foreach ($ManagedBy in $ExchGroup.Managedby) {
+                            $ManagerId = (Get-EXCHRecipient -Identity $ManagedBy -ErrorAction SilentlyContinue).PrimarySmtpAddress
+                            $OnlineManagerId = Get-Recipient -Identity $ManagerId -ErrorAction SilentlyContinue
+                            if ($OnlineManagerId.RecipientTypeDetails -in $ValidRecipientTypeDetails) {
+                                $null = $ValidManagers.Add($OnlineManagerId.PrimarySmtpAddress)
+                            }
+                        }
+                        if (($PSBoundParameters.ContainsKey('Force')) -and $ValidManagers.Count -eq 0) {
+                            Write-PSFMessage -Level Warning -Message ('Only the following manager(s) "{0}" for group "{1}" will be added because the other owner(s)/recipient(s) does not exist in Exchange Online as valid recipient(s).' -f ($ValidManagers -join ', '), $GroupId) -WarningAction Continue
                         }
                         else {
                             Write-PSFMessage -Level Warning -Message ('Manager {0} does not exist in Exchange Online as a valid recipient. Will not continue with current group {1}.' -f $ManagerId, $GroupId) -WarningAction Continue
+                            Write-PSFMessage -Level Verbose -Message ('Use the "Force" or "Manager" parameter to manually add your self or specified Owners for the current group "{0}".' -f $GroupId)
                             continue Group
                         }
                     }
                     $DistributionGroupObject.Manager = $ValidManagers
 
                     $Members = Get-EXCHDistributionGroupMember -Identity $ExchGroup.Identity -ErrorAction SilentlyContinue
-                    if ($PSBoundParameters.ContainsKey('Force') -and $null -eq $Members) {
-                        Write-PSFMessage -Level Warning -Message ('Excluding all members of {0} because no member recipients was found.' -f $ExchGroup.Identity) -WarningAction Continue
+                    if ($Members.Count -eq 0) {
+                        Write-PSFMessage -Level Warning -Message ('Excluding all members of {0} because no valid recipient(s) members was found.' -f $ExchGroup.Identity) -WarningAction Continue
                     }
-                    elseif ($null -eq $Members) {
-                        Write-PSFMessage -Level Warning -Message ('No members found in group. Will not continue with current group {1}.' -f $ExchGroup.Identity, $GroupId) -WarningAction Continue
-                        continue Group
+                    else {
+                        foreach ($Member in $Members) {
+                            $OnlineMemberId = Get-Recipient -Identity $Member.PrimarySmtpAddress -ErrorAction SilentlyContinue
+                            if ($OnlineMemberId.RecipientTypeDetails -in $ValidRecipientTypeDetails) {
+                                $null = $ValidMembers.Add($OnlineMemberId)
+                            }
+                            elseif ($PSBoundParameters.ContainsKey('Force')) {
+                                Write-PSFMessage -Level Warning -Message ('Excluding member {0} for group {1} because recipient does not exist in Exchange Online as a valid recipient.' -f $Member.PrimarySmtpAddress, $GroupId) -WarningAction Continue
+                            }
+                            else {
+                                Write-PSFMessage -Level Warning -Message ('Member {0} does not exist in Exchange Online as a valid recipient. Will not continue with current group {1}.' -f $Member.PrimarySmtpAddress, $GroupId) -WarningAction Continue
+                                continue Group
+                            }
+                        }
+                        $DistributionGroupObject.Members = $ValidMembers
                     }
-                    foreach ($Member in $Members) {
-                        $OnlineMemberId = Get-Recipient -Identity $Member.PrimarySmtpAddress -ErrorAction SilentlyContinue
-                        if ($OnlineMemberId.RecipientTypeDetails -in $ValidRecipientTypeDetails) {
-                            $null = $ValidMembers.Add($OnlineMemberId)
-                        }
-                        elseif ($PSBoundParameters.ContainsKey('Force')) {
-                            Write-PSFMessage -Level Warning -Message ('Excluding member {0} for group {1} because recipient does not exist in Exchange Online as a valid recipient.' -f $Member.PrimarySmtpAddress, $GroupId) -WarningAction Continue
-                        }
-                        else {
-                            Write-PSFMessage -Level Warning -Message ('Member {0} does not exist in Exchange Online as a valid recipient. Will not continue with current group {1}.' -f $Member.PrimarySmtpAddress, $GroupId) -WarningAction Continue
-                            continue Group
-                        }
-                    }
-                    $DistributionGroupObject.Members = $ValidMembers
 
                     $Command = Get-Command -Name New-DistributionGroup -ErrorAction Stop
                     [hashtable]$InitializeNewGroup = @{ }

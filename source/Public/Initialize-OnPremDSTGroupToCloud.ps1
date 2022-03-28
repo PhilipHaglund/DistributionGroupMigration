@@ -241,7 +241,7 @@
                     }
                     if ($NewManager) {
                         foreach ($ManagedBy in $Manager) {
-                            $OnlineManagerId = Get-Recipient -Identity $ManagedBy -ErrorAction SilentlyContinue
+                            $OnlineManagerId = Get-Recipient -Identity $ManagedBy.ToString() -ErrorAction SilentlyContinue
                             if ($OnlineManagerId.RecipientTypeDetails -in $ValidRecipientTypeDetails) {
                                 $null = $ValidManagers.Add($OnlineManagerId.PrimarySmtpAddress)
                             }
@@ -343,7 +343,7 @@
                     }
 
                     if ($DistributionGroupObject.Manager) {
-                        $InitializeSetGroup.Add('ManagedBy', $DistributionGroupObject.Manager.PrimarySmtpAddress)
+                        $InitializeSetGroup.Add('ManagedBy', $DistributionGroupObject.Manager)
                     }
 
                     Write-PSFMessage -Level Verbose -Message ('Updating properties for distribution group {0}.' -f $InitializedNewGroup.PrimarySmtpAddress)

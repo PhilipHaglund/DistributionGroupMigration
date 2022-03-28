@@ -37,10 +37,21 @@
     }
     catch {
         try {
-            $null = Connect-ExchangeOnline @PSBoundParameters -ShowBanner:$false
+            $BoundParameters = @{
+                ErrorAction = 'Stop'
+                ShowBanner  = $false
+            }
+            if ($CommandName.Count -gt 0) {
+                $BoundParameters.Add('CommandName', $CommandName)
+            }
+            if ($Prefix.Length -gt 0) {
+                $BoundParameters.Add('Prefix', $Prefix)
+            }
+            $null = Connect-ExchangeOnline @BoundParameters
             return $true
         }
         catch {
+            Write-PSFMessage -Level Warning -Message ('Unable to Connect-ExchangeOnline - {0}' -f $_.Exception.Message)
             return $false
         }
     }

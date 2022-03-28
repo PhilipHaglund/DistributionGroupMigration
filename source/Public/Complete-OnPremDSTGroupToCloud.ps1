@@ -33,13 +33,12 @@
     The LogPath parameter specifies an alternate path for where all logs and the distribution group XML-objects is created from Initialize-OnPremDSTGroupToCloud.
 
     .EXAMPLE
-    Complete-OnPremDSTGroupToCloud -Group 'dstgroup003@contoso.com' -NoMFA
+    Complete-OnPremDSTGroupToCloud -Group 'dstgroup003@contoso.com'
 
     [11:12:06][Complete-OnPremDSTGroupToCloud] Successfully removed the prefix from all properties on "dstgroup003@contoso.com".
     [11:12:06][Complete-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after completion, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs".
 
     This example retrieves the exported initialized distribution group object from the default path and removes the prefix.
-    When NoMFA switch is issued the connection to Exchange Online PowerShell will be using the native experience instead of modern authentication.
 
     .LINK
     https://github.com/PhilipHaglund/DistributionGroupMigration/blob/master/docs/en-US/Complete-OnPremDSTGroupToCloud.md
@@ -62,11 +61,7 @@
         "$env:APPDATA\PowerShell\PSFramework\Logs" for PowerShell Core.
         #>
         [Parameter()]
-        [string]$LogPath = (Get-PSFConfigValue -FullName 'PSFramework.Logging.FileSystem.LogPath'),
-
-        # Specifies that No MFA will be used when connecting to Exchange Online.
-        [Parameter()]
-        [switch]$NoMFA
+        [string]$LogPath = (Get-PSFConfigValue -FullName 'PSFramework.Logging.FileSystem.LogPath')
     )
     begin {
         try {

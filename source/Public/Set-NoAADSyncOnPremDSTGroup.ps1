@@ -22,12 +22,11 @@
     This example sets the adminDescription property to 'Group_NoAADSync' for the target source distribution group "dstgroup001@contoso.com" using Active Directory.
 
     .EXAMPLE
-    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com -NoMFA
+    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Set-NoAADSyncOnPremDSTGroup] Successfully set the adminDescription property to "Group_NoAADSync" for the source distribution group "dstgroup002@contoso.com".
 
-    This example sets the adminDescription property to 'Group_NoAADSync' for the target source distribution group "dstgroup001@contoso.com" using Active Directory.
-    When NoMFA switch is issued the connection to Exchange Online PowerShell will be using the native experience instead of modern authentication.
+    This example sets the adminDescription property to 'Group_NoAADSync' for the target source distribution group "dstgroup001@contoso.com" using Active Directory
 
     .EXAMPLE
     Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"

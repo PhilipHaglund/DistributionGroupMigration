@@ -20,12 +20,11 @@
     This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup001@contoso.com'.
 
     .EXAMPLE
-    Remove-OnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com -NoMFA
+    Remove-OnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Remove-OnPremDSTGroup] Successfully removed the source distribution group with identity "dstgroup002@contoso.com" from Exchange On-premise.
 
     This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup002@contoso.com'.
-    When NoMFA switch is issued the connection to Exchange Online PowerShell will be using the native experience instead of modern authentication.
 
     .EXAMPLE
     Remove-OnPremDSTGroup -Group 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
@@ -76,11 +75,7 @@
 
         # Specifies that no validation will take place for the existence of the initialized distribution group before the distribution group removal.
         [Parameter()]
-        [switch]$Force,
-
-        # Specifies that No MFA will be used when connecting to Exchange Online. If the Force parameter is specified the NoMFA parameter will have no effect.
-        [Parameter()]
-        [switch]$NoMFA
+        [switch]$Force
     )
     begin {
         try {

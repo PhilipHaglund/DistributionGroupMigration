@@ -1,4 +1,4 @@
-mode: ContinuousDelivery
+mode: Mainline
 next-version: 0.0.1
 major-version-bump-message: '(breaking\schange|breaking|major)\b'
 minor-version-bump-message: '(adds?|features?|minor)\b'
@@ -7,8 +7,7 @@ no-bump-message: '\+semver:\s?(none|skip)'
 assembly-informational-format: '{NuGetVersionV2}+Sha.{Sha}.Date.{CommitDate}'
 branches:
   master:
-    tag: preview
-    regex: ^master$
+    increment: Patch
   pull-request:
     tag: PR
   feature:

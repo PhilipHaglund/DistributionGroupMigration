@@ -13,21 +13,21 @@
     3. Remove the source distribution group from Exchange On-premise, which will also remove the Active Directory object.
 
     .EXAMPLE
-    Remove-OnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+    Remove-OnPremDSTGroup -Identity 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Remove-OnPremDSTGroup] Successfully removed the source distribution group with identity "dstgroup001@contoso.com" from Exchange On-premise.
 
     This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup001@contoso.com'.
 
     .EXAMPLE
-    Remove-OnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com
+    Remove-OnPremDSTGroup -Identity 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Remove-OnPremDSTGroup] Successfully removed the source distribution group with identity "dstgroup002@contoso.com" from Exchange On-premise.
 
     This example removes the source distribution group from Exchange On-premise, exchprod01.contoso.com, with the identity 'dstgroup002@contoso.com'.
 
     .EXAMPLE
-    Remove-OnPremDSTGroup -Group 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
+    Remove-OnPremDSTGroup -Identity 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
 
     [11:12:06][Remove-OnPremDSTGroup] Successfully removed the source distribution group with identity "dstgroup003@contoso.com" from Exchange On-premise.
 
@@ -35,7 +35,7 @@
     The LogPath parameter specifies an alternate path for all logs and the distribution group XML-objects.
 
     .EXAMPLE
-    Remove-OnPremDSTGroup -Group 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
+    Remove-OnPremDSTGroup -Identity 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
 
     WARNING: [11:12:03][Remove-OnPremDSTGroup] Excluding validation of existence for the initialized distribution group.
     [11:12:06][Remove-OnPremDSTGroup] Successfully removed the source distribution group with identity "dstgroup004@contoso.com" from Exchange On-premise.
@@ -56,7 +56,7 @@
             ValueFromPipeline
         )]
         [Alias('PrimarySmtpAddress')]
-        [string[]]$Group,
+        [System.Net.Mail.MailAddress[]]$Identity,
 
         # Specifies an Exchange On-premise server hosting the PowerShell endpoint.
         [Parameter(
@@ -124,7 +124,7 @@
         }
     }
     process {
-        :Group foreach ($GroupId in $Group) {
+        :Group foreach ($GroupId in $Identity) {
             if ($PSCmdlet.ShouldProcess($GroupId)) {
                 try {
 

@@ -16,7 +16,7 @@
     "Alias", "DisplayName", "Name", "PrimarySmtpAddress", "EmailAddresses"
 
     .EXAMPLE
-    Initialize-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+    Initialize-OnPremDSTGroupToCloud -Identity 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Successfully created a cloud only distribution group with identity "PreMig-dstgroup001@contoso.com".
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after initialization, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs\dstgroup001@contoso.com.byte".
@@ -24,7 +24,7 @@
     This example creates a "Cloud Only" (Exchange Online) copy of the Exchange On-premise distribution group 'dstgroup001@contoso.com' with the prefix 'PreMig-'.
 
     .EXAMPLE
-    Initialize-OnPremDSTGroupToCloud -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com -Prefix 'Mig1234-'
+    Initialize-OnPremDSTGroupToCloud -Identity 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com -Prefix 'Mig1234-'
 
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Successfully created a cloud only distribution group with identity "Mig1234-dstgroup002@contoso.com".
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after initialization, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs\dstgroup002@contoso.com.byte".
@@ -32,7 +32,7 @@
     This example creates a "Cloud Only" (Exchange Online) copy of the Exchange On-premise distribution group 'dstgroup001@contoso.com' with the prefix 'Mig1234-'.
 
     .EXAMPLE
-    Initialize-OnPremDSTGroupToCloud -Group 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
+    Initialize-OnPremDSTGroupToCloud -Identity 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
 
     WARNING: [11:12:03][Initialize-OnPremDSTGroupToCloud] Excluding manager Administrator@contoso.local for group dstgroup003@contoso.com because recipient does not exist in Exchange Online as a valid recipient.
     WARNING: [11:12:03][Initialize-OnPremDSTGroupToCloud] Excluding member  Administrator@contoso.local for group dstgroup003@contoso.com because recipient does not exist in Exchange Online as a valid recipient.
@@ -45,12 +45,12 @@
     that member or manager will be excluded from the created distribution group in Exchange Online.
 
     .EXAMPLE
-    Initialize-OnPremDSTGroupToCloud -Group 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com
+    Initialize-OnPremDSTGroupToCloud -Identity 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Successfully created a cloud only distribution group with identity "PreMig-dstgroup004@contoso.com".
     [11:12:06][Initialize-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after initialization, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs\dstgroup004@contoso.com.byte".
 
-    This example creates a "Cloud Only" (Exchange Online) copy of the Exchange On-premise distribution group 'dstgroup001@contoso.com' with the prefix 'Mig1234-'.
+    This example creates a "Cloud Only" (Exchange Online) copy of the Exchange On-premise distribution group 'dstgroup001@contoso.com' with the prefix 'PreMig-'.
 
     .EXAMPLE
     Initialize-OnPremDSTGroupToCloud -Group 'dstgroup005@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
@@ -68,13 +68,13 @@
         SupportsShouldProcess
     )]
     param (
-        # Specifies one or more distribution groups to be migrated. Recommended to use PrimarySmtpAddress as input to have a unique value.
+        # Specifies one or more distribution groups to be migrated. Only the PrimarySmtpAddress can be used to have a unique input that works both in Exchange On-Premise and Exchange Online.
         [Parameter(
             Mandatory,
             ValueFromPipeline
         )]
         [Alias('PrimarySmtpAddress')]
-        [string[]]$Group,
+        [System.Net.Mail.MailAddress[]]$Identity,
 
         # Specifies an Exchange On-premise server hosting the PowerShell endpoint.
         [Parameter(
@@ -179,7 +179,8 @@
         [regex]$AddPrefix = 'Alias|DisplayName|Name|PrimarySmtpAddress'
     }
     process {
-        :Group foreach ($GroupId in $Group) {
+        :Group foreach ($GroupId in $Identity) {
+            $GroupId = $GroupId.ToString()
             if ($PSCmdlet.ShouldProcess($GroupId)) {
                 try {
                     $ExoGroup = $null

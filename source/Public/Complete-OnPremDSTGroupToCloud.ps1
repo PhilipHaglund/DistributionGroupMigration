@@ -16,7 +16,7 @@
     "Alias", "DisplayName", "Name", "PrimarySmtpAddress", "EmailAddresses"
 
     .EXAMPLE
-    Complete-OnPremDSTGroupToCloud -Group 'dstgroup001@contoso.com'
+    Complete-OnPremDSTGroupToCloud -Identity 'dstgroup001@contoso.com'
 
     [11:12:06][Complete-OnPremDSTGroupToCloud] Successfully removed the prefix from all properties on "dstgroup001@contoso.com".
     [11:12:06][Complete-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after completion, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs".
@@ -24,7 +24,7 @@
     This example retrieves the exported initialized distribution group object from the default path and removes the prefix.
 
     .EXAMPLE
-    Complete-OnPremDSTGroupToCloud -Group 'dstgroup002@contoso.com' -LogPath "C:\Log"
+    Complete-OnPremDSTGroupToCloud -Identity 'dstgroup002@contoso.com' -LogPath "C:\Log"
 
     [11:12:06][Complete-OnPremDSTGroupToCloud] Successfully removed the prefix from all properties on "dstgroup002@contoso.com".
     [11:12:06][Complete-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after completion, to "C:\Log".
@@ -33,7 +33,7 @@
     The LogPath parameter specifies an alternate path for where all logs and the distribution group XML-objects is created from Initialize-OnPremDSTGroupToCloud.
 
     .EXAMPLE
-    Complete-OnPremDSTGroupToCloud -Group 'dstgroup003@contoso.com'
+    Complete-OnPremDSTGroupToCloud -Identity 'dstgroup003@contoso.com'
 
     [11:12:06][Complete-OnPremDSTGroupToCloud] Successfully removed the prefix from all properties on "dstgroup003@contoso.com".
     [11:12:06][Complete-OnPremDSTGroupToCloud] Exported a PSFClixml object of the distribution group, before and after completion, to "C:\Users\UserName\AppData\Roaming\WindowsPowerShell\PSFramework\Logs".
@@ -53,7 +53,7 @@
             ValueFromPipeline
         )]
         [Alias('PrimarySmtpAddress')]
-        [string[]]$Group,
+        [System.Net.Mail.MailAddress[]]$Identity,
 
         <#
         Specifies the path for all logs and the distribution group XML-objects.
@@ -92,7 +92,7 @@
         [regex]$PrefixAttribute = 'Alias|DisplayName|Name|PrimarySmtpAddress'
     }
     process {
-        :Group foreach ($GroupId in $Group) {
+        :Group foreach ($GroupId in $Identity) {
             if ($PSCmdlet.ShouldProcess($GroupId)) {
                 try {
                     $ExoGroup = $null

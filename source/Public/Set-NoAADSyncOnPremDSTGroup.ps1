@@ -15,21 +15,21 @@
     Notice: The ActiveDirectory module is required for this function to work.
 
     .EXAMPLE
-    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
+    Set-NoAADSyncOnPremDSTGroup -Identity 'dstgroup001@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Set-NoAADSyncOnPremDSTGroup] Successfully set the adminDescription property to "Group_NoAADSync" for the source distribution group "dstgroup001@contoso.com".
 
     This example sets the adminDescription property to 'Group_NoAADSync' for the target source distribution group "dstgroup001@contoso.com" using Active Directory.
 
     .EXAMPLE
-    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com
+    Set-NoAADSyncOnPremDSTGroup -Identity 'dstgroup002@contoso.com' -ExchangeServer exchprod01.contoso.com
 
     [11:12:06][Set-NoAADSyncOnPremDSTGroup] Successfully set the adminDescription property to "Group_NoAADSync" for the source distribution group "dstgroup002@contoso.com".
 
     This example sets the adminDescription property to 'Group_NoAADSync' for the target source distribution group "dstgroup001@contoso.com" using Active Directory
 
     .EXAMPLE
-    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
+    Set-NoAADSyncOnPremDSTGroup -Identity 'dstgroup003@contoso.com' -ExchangeServer exchprod01.contoso.com -LogPath "C:\Log"
 
     [11:12:06][Set-NoAADSyncOnPremDSTGroup] Successfully set the adminDescription property to "Group_NoAADSync" for the source distribution group "dstgroup003@contoso.com".
 
@@ -37,7 +37,7 @@
     The LogPath parameter specifies an alternate path for all logs and the distribution group XML-objects.
 
     .EXAMPLE
-    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com -Suffix 'NoO365Sync'
+    Set-NoAADSyncOnPremDSTGroup -Identity 'dstgroup004@contoso.com' -ExchangeServer exchprod01.contoso.com -Suffix 'NoO365Sync'
 
     [11:12:06][Set-NoAADSyncOnPremDSTGroup] Successfully set the adminDescription property to "Group_NoO365Sync" for the source distribution group "dstgroup004@contoso.com".
 
@@ -45,7 +45,7 @@
     The Suffix parameter specifies an alternate suffix for to put in the adminDescription property.
 
     .EXAMPLE
-    Set-NoAADSyncOnPremDSTGroup -Group 'dstgroup005@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
+    Set-NoAADSyncOnPremDSTGroup -Identity 'dstgroup005@contoso.com' -ExchangeServer exchprod01.contoso.com -Force
 
     WARNING: [11:12:03][Set-NoAADSyncOnPremDSTGroup] Excluding validation of existence for the initialized distribution group.
     [11:12:06][Set-NoAADSyncOnPremDSTGroup] Successfully set the adminDescription property to "Group_NoAADSync" for the source distribution group "dstgroup005@contoso.com".
@@ -66,7 +66,7 @@
             ValueFromPipeline
         )]
         [Alias('PrimarySmtpAddress')]
-        [string[]]$Group,
+        [System.Net.Mail.MailAddress[]]$Identity,
 
         # Specifies an Exchange On-premise server hosting the PowerShell endpoint.
         [Parameter(
@@ -159,7 +159,7 @@
         $AdminDescription = "Group_$Suffix"
     }
     process {
-        :Group foreach ($GroupId in $Group) {
+        :Group foreach ($GroupId in $Identity) {
             if ($PSCmdlet.ShouldProcess($GroupId)) {
                 try {
 
